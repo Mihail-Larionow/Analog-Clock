@@ -2,34 +2,32 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/clock_dial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/clock_dial" />
 
     <ImageView
-        android:id="@+id/clock_hand_hour"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/clock_hand_second"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="@+id/clock_dial"
         app:layout_constraintEnd_toEndOf="@+id/clock_dial"
         app:layout_constraintStart_toStartOf="@+id/clock_dial"
         app:layout_constraintTop_toTopOf="@+id/clock_dial"
-        app:srcCompat="@drawable/clock_hand_hour" />
+        app:srcCompat="@drawable/clock_hand_second" />
 
     <ImageView
         android:id="@+id/clock_hand_minute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="@+id/clock_dial"
         app:layout_constraintEnd_toEndOf="@+id/clock_dial"
         app:layout_constraintStart_toStartOf="@+id/clock_dial"
@@ -37,14 +35,13 @@
         app:srcCompat="@drawable/clock_hand_minute" />
 
     <ImageView
-        android:id="@+id/clock_hand_second"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/clock_hand_hour"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="@+id/clock_dial"
         app:layout_constraintEnd_toEndOf="@+id/clock_dial"
         app:layout_constraintStart_toStartOf="@+id/clock_dial"
         app:layout_constraintTop_toTopOf="@+id/clock_dial"
-        app:srcCompat="@drawable/clock_hand_second" />
-
+        app:srcCompat="@drawable/clock_hand_hour" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
