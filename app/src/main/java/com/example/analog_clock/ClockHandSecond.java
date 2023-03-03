@@ -1,13 +1,13 @@
 package com.example.analog_clock;
 
-import android.widget.ImageView;
+import android.graphics.Bitmap;
 
 public class ClockHandSecond extends AbstractClockHand {
-    public ClockHandSecond(ImageView clockHand){
+    public ClockHandSecond(Bitmap clockHand){
         this.clockHand = clockHand;
     }
     @Override
     public void moveHand(int seconds, int milliSeconds){
-        clockHand.setRotation(6*seconds + 6*milliSeconds/1000);
+        //clockHand.setRotation(6*seconds + 6*milliSeconds/1000);
     }
 }

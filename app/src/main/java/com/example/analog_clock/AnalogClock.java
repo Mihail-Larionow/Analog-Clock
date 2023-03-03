@@ -1,28 +1,18 @@
 package com.example.analog_clock;
 
-import android.view.LayoutInflater;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import java.util.Calendar;
+import android.graphics.Bitmap;
 
 public class AnalogClock extends AbstractClock {
 
-    final ImageView clockDial;
+    final Bitmap clockDial;
     final AbstractClockHand clockHandHour, clockHandMinute, clockHandSecond;
 
-    public AnalogClock(LinearLayout parentLayout, LayoutInflater inflater){
-        super(parentLayout, inflater);
-        clockDial = clockView.findViewById(R.id.clock_dial);
-        clockHandHour = new ClockHandHour(clockView.findViewById(R.id.clock_hand_hour));
-        clockHandMinute = new ClockHandMinute(clockView.findViewById(R.id.clock_hand_minute));
-        clockHandSecond = new ClockHandSecond(clockView.findViewById(R.id.clock_hand_second));
-    }
-
-    @Override
-    public void showClock(LinearLayout parentLayout, LayoutInflater inflater){
-        clockView = inflater.inflate(R.layout.analog_clock, null, false);
-        parentLayout.addView(clockView);
+    public AnalogClock(Bitmap clockDial, Bitmap handHour, Bitmap handMinute, Bitmap handSecond){
+        super();
+        this.clockDial = clockDial;
+        clockHandHour = new ClockHandHour(handHour);
+        clockHandMinute = new ClockHandMinute(handMinute);
+        clockHandSecond = new ClockHandSecond(handSecond);
     }
 
     @Override

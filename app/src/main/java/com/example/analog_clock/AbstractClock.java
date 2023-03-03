@@ -1,23 +1,16 @@
 package com.example.analog_clock;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.LinearLayout;
-
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public abstract class AbstractClock extends Thread{
-    Calendar calendar;
+    private Calendar calendar;
     final TimeZone timeZone;
-    public View clockView;
 
-    public int hours, minutes, seconds;
-    public AbstractClock(LinearLayout parentLayout, LayoutInflater inflater) {
+    protected int hours, minutes, seconds;
+    protected AbstractClock() {
         timeZone = TimeZone.getDefault();
-        this.showClock(parentLayout, inflater);
     }
-    public abstract void showClock(LinearLayout parentLayout, LayoutInflater inflater);
     public abstract void showTime();
 
     public int getHours(){

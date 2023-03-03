@@ -1,10 +1,8 @@
 package com.example.analog_clock;
 
-import android.widget.ImageView;
-
-import java.util.Calendar;
+import android.graphics.Bitmap;
 
 public abstract class AbstractClockHand {
-    public ImageView clockHand;
+    public Bitmap clockHand;
     public abstract void moveHand(int units, int preUnits);
 }
