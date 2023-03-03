@@ -6,17 +6,29 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
+
+import androidx.core.content.res.ResourcesCompat;
+
+import com.example.analog_clock.AbstractClock;
+import com.example.analog_clock.AnalogClock;
 import com.example.analog_clock.R;
 
 public class AnalogClockView extends View{
     private int dial, handHour, handMinute, handSecond;
+    private int viewCenterX, viewCenterY;
+    Drawable imageDial, imageHandHour, imageHandMinute, imageHandSecond;
     private Bitmap bitmapDial, bitmapHandHour, bitmapHandMinute, bitmapHandSecond;
-    private int bitmapWidth, bitmapHeight;
     private int viewWidth, viewHeight;
+
+    private int MAX_IMAGE_WIDTH = 1024, MAX_IMAGE_HEIGHT = 1024;
     Context context;
+
+    private AbstractClock analogClock;
 
     public AnalogClockView(Context context, AttributeSet attrs){
         super(context, attrs);
@@ -33,45 +45,46 @@ public class AnalogClockView extends View{
         } finally {
             a.recycle();
         }
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas){
         Resources res = getResources();
-        Bitmap bm = BitmapFactory.decodeResource(res, dial);
+        bitmapDial = createBitmap(res, dial, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
+        bitmapHandHour = createBitmap(res, handHour, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
+        bitmapHandMinute = createBitmap(res, handMinute, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
+        bitmapHandSecond = createBitmap(res, handSecond, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
 
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        bitmapWidth = Math.min(displayMetrics.widthPixels, viewWidth);
-        bitmapHeight = Math.min(displayMetrics.widthPixels, viewHeight);
-        if(bitmapHeight>bitmapWidth) bitmapHeight = bitmapWidth;
-        else bitmapWidth = bitmapHeight;
-        bitmapDial = Bitmap.createScaledBitmap(bm, bitmapWidth, bitmapHeight, false);
+        analogClock = new AnalogClock(res, dial, handHour, handMinute, handSecond);
 
-        bm = BitmapFactory.decodeResource(res, handHour);
-        bitmapHandHour = Bitmap.createScaledBitmap(bm, bitmapWidth, bitmapHeight, false);
+        imageDial = ResourcesCompat.getDrawable(res, R.drawable.clock_dial, null);
 
-        bm = BitmapFactory.decodeResource(res, handMinute);
-        bitmapHandMinute = Bitmap.createScaledBitmap(bm, bitmapWidth, bitmapHeight, false);
-
-        bm = BitmapFactory.decodeResource(res, handSecond);
-        bitmapHandSecond = Bitmap.createScaledBitmap(bm, bitmapWidth, bitmapHeight, false);
-
-        canvas.drawBitmap(bitmapDial,0,0, null);
-        canvas.drawBitmap(bitmapHandHour,0,0, null);
-        canvas.drawBitmap(bitmapHandMinute,0,0, null);
-        canvas.drawBitmap(bitmapHandSecond,0,0, null);
+        MAX_IMAGE_WIDTH = imageDial.getIntrinsicWidth();
+        MAX_IMAGE_HEIGHT = imageDial.getIntrinsicHeight();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int desiredWidth = 1024;
-        int desiredHeight = 1024;
+        int desiredWidth = MAX_IMAGE_WIDTH;
+        int desiredHeight = MAX_IMAGE_HEIGHT;
 
         viewWidth = measureDimension(desiredWidth, widthMeasureSpec);
         viewHeight = measureDimension(desiredHeight, heightMeasureSpec);
 
         setMeasuredDimension(viewWidth, viewHeight);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas){
+        super.onDraw(canvas);
+        //DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+
+        canvas.save();
+        analogClock.showTime(canvas, viewWidth, viewHeight);
+        canvas.restore();
+    }
+
+    private Bitmap createBitmap(Resources res, int drawable, int width, int height){
+        Bitmap newBitmap = BitmapFactory.decodeResource(res, drawable);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(newBitmap, width, height, false);
+        return scaledBitmap;
     }
 
     private int measureDimension(int desiredSize, int measureSpec) {

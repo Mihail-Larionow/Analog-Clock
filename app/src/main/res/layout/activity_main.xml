@@ -9,7 +9,9 @@
     android:id="@+id/main_layout">
 
     <com.example.analog_clock.ui.AnalogClockView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="357dp"
+        android:layout_height="462dp"
+        android:rotation="0" />
+
 
 </LinearLayout>
