@@ -30,6 +30,8 @@ public abstract class AbstractClock extends Thread{
         return calendar.get(Calendar.SECOND);
     }
 
+    public abstract int getWidth();
+    public abstract int getHeight();
     public void tik(){
         calendar = Calendar.getInstance(timeZone);
         hours = getHours();

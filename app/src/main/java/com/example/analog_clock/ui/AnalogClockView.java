@@ -19,20 +19,15 @@ import com.example.analog_clock.AnalogClock;
 import com.example.analog_clock.R;
 
 public class AnalogClockView extends View{
-    private int dial, handHour, handMinute, handSecond;
-    private int viewCenterX, viewCenterY;
-    Drawable imageDial, imageHandHour, imageHandMinute, imageHandSecond;
-    private Bitmap bitmapDial, bitmapHandHour, bitmapHandMinute, bitmapHandSecond;
+    final int dial, handHour, handMinute, handSecond;
     private int viewWidth, viewHeight;
-
     private int MAX_IMAGE_WIDTH = 1024, MAX_IMAGE_HEIGHT = 1024;
-    Context context;
+    boolean isAttached, isChanged;
 
-    private AbstractClock analogClock;
+    final AbstractClock analogClock;
 
     public AnalogClockView(Context context, AttributeSet attrs){
         super(context, attrs);
-        this.context = context;
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.AnalogClockView,
@@ -46,17 +41,10 @@ public class AnalogClockView extends View{
             a.recycle();
         }
         Resources res = getResources();
-        bitmapDial = createBitmap(res, dial, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
-        bitmapHandHour = createBitmap(res, handHour, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
-        bitmapHandMinute = createBitmap(res, handMinute, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
-        bitmapHandSecond = createBitmap(res, handSecond, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
-
         analogClock = new AnalogClock(res, dial, handHour, handMinute, handSecond);
 
-        imageDial = ResourcesCompat.getDrawable(res, R.drawable.clock_dial, null);
-
-        MAX_IMAGE_WIDTH = imageDial.getIntrinsicWidth();
-        MAX_IMAGE_HEIGHT = imageDial.getIntrinsicHeight();
+        MAX_IMAGE_WIDTH = analogClock.getWidth();
+        MAX_IMAGE_HEIGHT = analogClock.getHeight();
     }
 
     @Override
@@ -75,16 +63,8 @@ public class AnalogClockView extends View{
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
         //DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-
-        canvas.save();
+        isChanged = false;
         analogClock.showTime(canvas, viewWidth, viewHeight);
-        canvas.restore();
-    }
-
-    private Bitmap createBitmap(Resources res, int drawable, int width, int height){
-        Bitmap newBitmap = BitmapFactory.decodeResource(res, drawable);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(newBitmap, width, height, false);
-        return scaledBitmap;
     }
 
     private int measureDimension(int desiredSize, int measureSpec) {

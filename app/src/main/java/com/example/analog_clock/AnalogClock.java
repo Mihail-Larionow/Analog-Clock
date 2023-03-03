@@ -15,27 +15,40 @@ public class AnalogClock extends AbstractClock {
     public AnalogClock(Resources res, int clockDial, int handHour, int handMinute, int handSecond){
         super();
         this.clockDial = ResourcesCompat.getDrawable(res, clockDial, null);
-        MAX_IMAGE_WIDTH = this.clockDial.getIntrinsicWidth();
-        MAX_IMAGE_HEIGHT = this.clockDial.getIntrinsicHeight();
-
         clockHandHour = new ClockHandHour(res, handHour);
         clockHandMinute = new ClockHandMinute(res, handMinute);
         clockHandSecond = new ClockHandSecond(res, handSecond);
     }
 
     @Override
+    public int getWidth(){
+        return clockDial.getIntrinsicWidth();
+    }
+    @Override
+    public int getHeight(){
+        return clockDial.getIntrinsicHeight();
+    }
+    @Override
     public void showTime(Canvas canvas, int width, int height){
         int centerX = width/2;
         int centerY = height/2;
 
-        if(width < MAX_IMAGE_WIDTH || height < MAX_IMAGE_HEIGHT) {
-            float scale = Math.min((float) width / MAX_IMAGE_WIDTH, (float) height / MAX_IMAGE_HEIGHT);
+        int imageWidth = getWidth();
+        int imageHeight = getHeight();
+
+        boolean isScaled = false;
+        if(width < imageWidth || height < imageHeight) {
+            isScaled = true;
+            float scale = Math.min((float) width / imageWidth, (float) height / imageHeight);
             canvas.save();
-            canvas.scale(scale, scale, width / 2, height / 2);
+            canvas.scale(scale, scale, (float) width / 2, (float) height / 2);
         }
-        clockDial.setBounds(centerX - (MAX_IMAGE_WIDTH/2), centerY - (MAX_IMAGE_HEIGHT/2),
-                centerX + (MAX_IMAGE_WIDTH/2), centerY + (MAX_IMAGE_HEIGHT/2));
+        clockDial.setBounds(centerX - (imageWidth/2), centerY - (imageHeight/2),
+                centerX + (imageWidth/2), centerY + (imageHeight/2));
         clockDial.draw(canvas);
-        canvas.save();
+        clockHandSecond.moveHand(canvas, centerX, centerY, seconds, 0);
+        clockHandMinute.moveHand(canvas, centerX, centerY, minutes, seconds);
+        clockHandHour.moveHand(canvas, centerX, centerY, hours, minutes);
+        if(isScaled) canvas.restore();
     }
 }
