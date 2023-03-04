@@ -1,10 +1,8 @@
 package com.example.analog_clock;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-
 import java.util.Calendar;
 import java.util.TimeZone;
+import android.graphics.Canvas;
 
 public abstract class AbstractClock{
 
