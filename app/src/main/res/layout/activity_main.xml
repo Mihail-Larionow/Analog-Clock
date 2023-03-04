@@ -19,8 +19,4 @@
 
     </androidx.viewpager2.widget.ViewPager2>
 
-    <com.example.analog_clock.ui.AnalogClockView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
