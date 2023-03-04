@@ -17,6 +17,8 @@ public abstract class AbstractClock{
         minutes = getMinutes();
         seconds = getSeconds();
     }
+
+    //Abstract method to show time at the clock
     public abstract void showTime(Canvas canvas, int width, int height);
 
     public int getHours(){
@@ -35,6 +37,7 @@ public abstract class AbstractClock{
 
     public abstract int getHeight();
 
+    //Change hours, minutes and seconds of the clock
     protected void tik(){
         calendar = Calendar.getInstance(timeZone);
         hours = getHours();

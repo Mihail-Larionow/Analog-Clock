@@ -12,9 +12,11 @@ public abstract class AbstractClockHand {
 
     public AbstractClockHand(Resources res, int imageClockHand){
         this.imageClockHand = ResourcesCompat.getDrawable(res, imageClockHand, null);
+
         MAX_IMAGE_WIDTH = this.imageClockHand.getIntrinsicWidth();
         MAX_IMAGE_HEIGHT = this.imageClockHand.getIntrinsicHeight();
     }
 
-    public abstract void moveHand(Canvas canvas, int centerX, int centerY, int units, int preUnits);
+    //Abstract method to show time by hand
+    public abstract void showTime(Canvas canvas, int centerX, int centerY, int units, int preUnits);
 }

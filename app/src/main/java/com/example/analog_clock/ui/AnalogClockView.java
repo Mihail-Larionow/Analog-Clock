@@ -7,8 +7,8 @@ import android.util.AttributeSet;
 import com.example.analog_clock.R;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import com.example.analog_clock.AbstractClock;
 import com.example.analog_clock.AnalogClock;
+import com.example.analog_clock.AbstractClock;
 
 public class AnalogClockView extends View{
 
@@ -19,6 +19,8 @@ public class AnalogClockView extends View{
 
     public AnalogClockView(Context context, AttributeSet attrs){
         super(context, attrs);
+
+        Resources res = getResources();
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.AnalogClockView,
@@ -32,8 +34,8 @@ public class AnalogClockView extends View{
             a.recycle();
         }
 
-        Resources res = getResources();
         analogClock = new AnalogClock(res, dial, handHour, handMinute, handSecond);
+
         MAX_IMAGE_WIDTH = analogClock.getWidth();
         MAX_IMAGE_HEIGHT = analogClock.getHeight();
     }
@@ -41,16 +43,20 @@ public class AnalogClockView extends View{
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         viewWidth = measureDimension(MAX_IMAGE_WIDTH, widthMeasureSpec);
         viewHeight = measureDimension(MAX_IMAGE_HEIGHT, heightMeasureSpec);
+
         setMeasuredDimension(viewWidth, viewHeight);
     }
 
     @Override
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
+
         //DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         analogClock.showTime(canvas, viewWidth, viewHeight);
+
         postInvalidateDelayed(500);
         invalidate();
     }
@@ -69,4 +75,5 @@ public class AnalogClockView extends View{
         }
         return result;
     }
+
 }

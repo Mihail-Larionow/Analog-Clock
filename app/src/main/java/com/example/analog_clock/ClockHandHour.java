@@ -9,13 +9,16 @@ public class ClockHandHour extends AbstractClockHand {
         super(res,clockHand);
     }
 
+    //Overriden method showTime
     @Override
-    public void moveHand(Canvas canvas, int centerX, int centerY, int hours, int minutes){
+    public void showTime(Canvas canvas, int centerX, int centerY, int hours, int minutes){
         canvas.save();
         canvas.rotate( 30*hours + (float)minutes/2, centerX, centerY);
+
         imageClockHand.setBounds(centerX - (MAX_IMAGE_WIDTH/2), centerY - (MAX_IMAGE_HEIGHT/2),
                 centerX + (MAX_IMAGE_WIDTH/2), centerY + (MAX_IMAGE_HEIGHT/2));
         imageClockHand.draw(canvas);
+
         canvas.restore();
     }
 
