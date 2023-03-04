@@ -1,14 +1,11 @@
 package com.example.analog_clock;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-
 import androidx.core.content.res.ResourcesCompat;
 
 public class AnalogClock extends AbstractClock {
-
     Drawable clockDial;
     final AbstractClockHand clockHandHour, clockHandMinute, clockHandSecond;
 
@@ -24,12 +21,16 @@ public class AnalogClock extends AbstractClock {
     public int getWidth(){
         return clockDial.getIntrinsicWidth();
     }
+
     @Override
     public int getHeight(){
         return clockDial.getIntrinsicHeight();
     }
+
     @Override
     public void showTime(Canvas canvas, int width, int height){
+        tik();
+
         int centerX = width/2;
         int centerY = height/2;
 

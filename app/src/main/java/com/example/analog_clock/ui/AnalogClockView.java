@@ -1,29 +1,20 @@
 package com.example.analog_clock.ui;
 
+import android.view.View;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.util.AttributeSet;
+import com.example.analog_clock.R;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.View;
-
-import androidx.core.content.res.ResourcesCompat;
-
 import com.example.analog_clock.AbstractClock;
 import com.example.analog_clock.AnalogClock;
-import com.example.analog_clock.R;
 
 public class AnalogClockView extends View{
-    final int dial, handHour, handMinute, handSecond;
-    private int viewWidth, viewHeight;
-    private int MAX_IMAGE_WIDTH = 1024, MAX_IMAGE_HEIGHT = 1024;
-    boolean isAttached, isChanged;
 
+    final int dial, handHour, handMinute, handSecond;
+    final int MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT;
+    private int viewWidth, viewHeight;
     final AbstractClock analogClock;
 
     public AnalogClockView(Context context, AttributeSet attrs){
@@ -40,9 +31,9 @@ public class AnalogClockView extends View{
         } finally {
             a.recycle();
         }
+
         Resources res = getResources();
         analogClock = new AnalogClock(res, dial, handHour, handMinute, handSecond);
-
         MAX_IMAGE_WIDTH = analogClock.getWidth();
         MAX_IMAGE_HEIGHT = analogClock.getHeight();
     }
@@ -50,12 +41,8 @@ public class AnalogClockView extends View{
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int desiredWidth = MAX_IMAGE_WIDTH;
-        int desiredHeight = MAX_IMAGE_HEIGHT;
-
-        viewWidth = measureDimension(desiredWidth, widthMeasureSpec);
-        viewHeight = measureDimension(desiredHeight, heightMeasureSpec);
-
+        viewWidth = measureDimension(MAX_IMAGE_WIDTH, widthMeasureSpec);
+        viewHeight = measureDimension(MAX_IMAGE_HEIGHT, heightMeasureSpec);
         setMeasuredDimension(viewWidth, viewHeight);
     }
 
@@ -63,15 +50,15 @@ public class AnalogClockView extends View{
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
         //DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        isChanged = false;
         analogClock.showTime(canvas, viewWidth, viewHeight);
+        postInvalidateDelayed(500);
+        invalidate();
     }
 
     private int measureDimension(int desiredSize, int measureSpec) {
         int result;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
@@ -79,9 +66,6 @@ public class AnalogClockView extends View{
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
             }
-        }
-        if (result < desiredSize){
-
         }
         return result;
     }
