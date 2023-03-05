@@ -2,7 +2,7 @@
 Custom view, существовавший ранее, но позже удаленный, Analog Clock.
 Представляет из себя аналоговые часы, показывающие актуальное время на устройстве.
 
-![tiktak](https://github.com/Mihail-Larionow/analog_clock/blob/master/screenshots/clock.png)
+<img src="https://github.com/Mihail-Larionow/analog_clock/blob/master/screenshots/clock.png" alt="drawing" height="490" width="225"/>
 
 ## Custom View
 Данный View можно быстро и легко добавить в проект, как и любой другой из стандартных. То же самое можно сказать и про его настройку.
@@ -19,4 +19,4 @@ UI данного View реализован в классе AnalogClockView.
 
 ## Application
 Для демонстрации данного View было создано приложение с разными его представлениями. 
-Для его установки необходимо на andorid устройстве запустить файл analog_clock.apk, после чего его можно спокойно запустить.
+Для его установки необходимо на andorid устройстве запустить файл ANALOG_CLOCK.apk, после чего его можно спокойно использовать.
