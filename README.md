@@ -2,6 +2,7 @@
 Custom view, существовавший ранее, но позже удаленный, Analog Clock.
 Представляет из себя аналоговые часы, показывающие актуальное время на устройстве.
 
+![tiktak](https://github.com/Mihail-Larionow/analog_clock/blob/master/screenshots/clock.png)
 
 ## Custom View
 Данный View можно быстро и легко добавить в проект, как и любой другой из стандартных. То же самое можно сказать и про его настройку.
