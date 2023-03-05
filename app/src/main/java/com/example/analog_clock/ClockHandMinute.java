@@ -13,7 +13,7 @@ public class ClockHandMinute extends AbstractClockHand {
     @Override
     public void showTime(Canvas canvas, int centerX, int centerY, int minutes, int seconds){
         canvas.save();
-        canvas.rotate(6*minutes + 2*((float)seconds/20), centerX, centerY);
+        canvas.rotate(6*minutes, centerX, centerY);
 
         imageClockHand.setBounds(centerX - (MAX_IMAGE_WIDTH/2), centerY - (MAX_IMAGE_HEIGHT/2),
                 centerX + (MAX_IMAGE_WIDTH/2), centerY + (MAX_IMAGE_HEIGHT/2));
