@@ -10,8 +10,8 @@ fun PointF.radial(pos: Int, rad: Float, x0: Float, y0: Float){
     y = rad * sin(angle) + y0
 }
 
-fun PointF.radial(pos: Int, rad: Float, x0: Float, y0: Float, baseline: Float){
+fun PointF.radial(pos: Int, rad: Float, x0: Float, y0: Float, offSet: Float){
     val angle = (pos * (Math.PI / 6) - Math.PI / 2).toFloat()
     x = x0 + rad * cos(angle)
-    y = y0 + rad * sin(angle) - baseline
+    y = y0 + rad * sin(angle) - offSet
 }
