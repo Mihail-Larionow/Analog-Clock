@@ -4,6 +4,7 @@ import android.graphics.PointF
 import kotlin.math.cos
 import kotlin.math.sin
 
+// Overloaded method for calculating position relative to a point
 fun PointF.radial(pos: Int, rad: Float, x0: Float, y0: Float){
     val angle = (pos * (Math.PI / 30)).toFloat()
     x = rad * cos(angle) + x0

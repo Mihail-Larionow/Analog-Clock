@@ -1,3 +1,6 @@
 <resources>
+    <string name="vk">Best Company Ever</string>
     <string name="app_name">AnalogClock</string>
+    <string name="next">NEXT</string>
+    <string name="back">BACK</string>
 </resources>

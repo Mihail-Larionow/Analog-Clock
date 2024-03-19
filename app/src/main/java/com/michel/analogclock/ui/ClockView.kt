@@ -1,46 +1,42 @@
 package com.michel.analogclock.ui
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
-import android.os.Parcel
+import android.os.Build.VERSION.SDK_INT
+import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.LinearInterpolator
 import androidx.annotation.ColorInt
 import androidx.core.content.withStyledAttributes
 import com.michel.analogclock.R
 import com.michel.analogclock.extensions.dpToPx
 import com.michel.analogclock.extensions.radial
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
-class ClockView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+class ClockView : View {
 
     companion object{
-        private const val DEFAULT_SIZE = 40
+        private const val DEFAULT_SIZE = 200
         private const val DEFAULT_DIAL_COLOR = Color.BLACK
         private const val DEFAULT_BACKGROUND_COLOR = Color.WHITE
+        private const val DEFAULT_LABEL_COLOR = Color.BLACK
         private const val DEFAULT_HOURS_HAND_COLOR = Color.BLACK
         private const val DEFAULT_MINUTES_HAND_COLOR = Color.BLACK
         private const val DEFAULT_SECONDS_HAND_COLOR = Color.BLACK
     }
 
-    private var centerX = 0.0f
-    private var centerY = 0.0f
-    private var radius = 0.0f
-    private var size = 0
+    private var centerX = DEFAULT_SIZE / 2f
+    private var centerY = DEFAULT_SIZE / 2f
+    private var radius = DEFAULT_SIZE / 2f
 
     private var hours = 0
     private var minutes = 0
@@ -48,7 +44,7 @@ class ClockView @JvmOverloads constructor(
 
     private var dialColor = DEFAULT_DIAL_COLOR
     private var backgroundColor = DEFAULT_BACKGROUND_COLOR
-    private var labelColor = DEFAULT_DIAL_COLOR
+    private var labelColor = DEFAULT_LABEL_COLOR
     private var hoursHandColor = DEFAULT_HOURS_HAND_COLOR
     private var minutesHandColor = DEFAULT_MINUTES_HAND_COLOR
     private var secondsHandColor = DEFAULT_SECONDS_HAND_COLOR
@@ -61,40 +57,32 @@ class ClockView @JvmOverloads constructor(
     private var minutesHandPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var secondsHandPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    init{
-        context.withStyledAttributes(attrs, R.styleable.ClockView){
-            dialColor = getColor(
-                R.styleable.ClockView_dialColor,
-                DEFAULT_DIAL_COLOR
-            )
-            backgroundColor = getColor(
-                R.styleable.ClockView_backgroundColor,
-                DEFAULT_BACKGROUND_COLOR
-            )
-            labelColor = getColor(
-                R.styleable.ClockView_labelColor,
-                dialColor
-            )
-            hoursHandColor = getColor(
-                R.styleable.ClockView_hoursHandColor,
-                hoursHandColor
-            )
-            minutesHandColor = getColor(
-                R.styleable.ClockView_minutesHandColor,
-                minutesHandColor
-            )
-            secondsHandColor = getColor(
-                R.styleable.ClockView_secondsHandColor,
-                secondsHandColor
-            )
-        }
+    // To calculate the local time
+    private val timeUpdater: Runnable
 
-        val calendar: Calendar = Calendar.getInstance()
-        hours = calendar.get(Calendar.HOUR_OF_DAY) % 12
-        minutes = calendar.get(Calendar.MINUTE)
-        seconds = calendar.get(Calendar.SECOND)
+    constructor(context: Context) : super(context, null)
+
+    constructor(context: Context, attrs: AttributeSet?) :
+            super(context, attrs){
+                attributesSetup(attrs = attrs)
     }
 
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
+            super(context, attrs, defStyleAttr, 0){
+                attributesSetup(attrs = attrs)
+    }
+
+    init{
+        timeUpdater = object: Runnable {
+            override fun run() {
+                updateTime()
+                invalidate()
+                this@ClockView.postDelayed(this, 1000)
+            }
+        }
+    }
+
+    // Public methods for setting attributes programmatically
     fun setDialColor(@ColorInt color: Int){
         dialColor = color
         borderPaint.color = dialColor
@@ -132,61 +120,104 @@ class ClockView @JvmOverloads constructor(
         invalidate()
     }
 
+    // Overridden view's lifecycle methods
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        this.post(timeUpdater)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        this.removeCallbacks(timeUpdater)
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
         val initSize = resolveDefaultSize(widthMeasureSpec)
-        setMeasuredDimension(
-            max(initSize, size),
-            max(initSize, size)
-        )
+        setMeasuredDimension(initSize, initSize)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        radius = min(w, h) / 2f
+        centerX = w / 2f
+        centerY = h / 2f
+
+        // Update paint after a dimensional change
+        paintSetup()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawDial(canvas = canvas)
+        drawBackground(canvas = canvas)
+        drawBorder(canvas = canvas)
+        drawDots(canvas = canvas)
+        drawLabels(canvas = canvas)
         drawHoursHand(canvas = canvas)
         drawMinutesHand(canvas = canvas)
         drawSecondsHand(canvas = canvas)
     }
 
-    override fun onSaveInstanceState(): Parcelable? {
-        val savedState = SavedState(super.onSaveInstanceState())
-        savedState.dialColor = dialColor
-        savedState.backgroundColor = backgroundColor
-        savedState.labelColor = labelColor
-        savedState.hoursHandColor = hoursHandColor
-        savedState.minutesHandColor = minutesHandColor
-        savedState.secondsHandColor = secondsHandColor
-        return savedState
+    // View's state preserve
+    override fun onSaveInstanceState(): Parcelable {
+        val bundle = Bundle()
+        bundle.putParcelable("superState", super.onSaveInstanceState())
+        bundle.putInt("dialColor", dialColor)
+        bundle.putInt("backgroundColor", backgroundColor)
+        bundle.putInt("labelColor", labelColor)
+        bundle.putInt("hoursHandColor", hoursHandColor)
+        bundle.putInt("minutesHandColor", minutesHandColor)
+        bundle.putInt("secondsHandColor", secondsHandColor)
+        return bundle
     }
 
+    // View's state upload
+    @Suppress("DEPRECATION")
     override fun onRestoreInstanceState(state: Parcelable?) {
-        if(state is SavedState){
-            super.onRestoreInstanceState(state)
-            dialColor = state.dialColor
-            backgroundColor = state.backgroundColor
-            labelColor = state.labelColor
-            hoursHandColor = state.hoursHandColor
-            minutesHandColor = state.minutesHandColor
-            secondsHandColor = state.secondsHandColor
+        var superState: Parcelable? = null
+        if(state is Bundle){
+            dialColor = state.getInt("dialColor")
+            backgroundColor = state.getInt("backgroundColor")
+            labelColor = state.getInt("labelColor")
+            hoursHandColor = state.getInt("hoursHandColor")
+            minutesHandColor = state.getInt("minutesHandColor")
+            secondsHandColor = state.getInt("secondsHandColor")
+            superState = if(SDK_INT >= 33) state.getParcelable("superState", Parcelable::class.java)
+            else state.getParcelable("superState")
+        }
+        super.onRestoreInstanceState(superState)
+    }
 
-        }else{
-            super.onRestoreInstanceState(state)
+    private fun attributesSetup(attrs: AttributeSet?){
+        context.withStyledAttributes(attrs, R.styleable.ClockView){
+            dialColor = getColor(
+                R.styleable.ClockView_dialColor,
+                DEFAULT_DIAL_COLOR
+            )
+            backgroundColor = getColor(
+                R.styleable.ClockView_backgroundColor,
+                DEFAULT_BACKGROUND_COLOR
+            )
+            labelColor = getColor(
+                R.styleable.ClockView_labelColor,
+                DEFAULT_LABEL_COLOR
+            )
+            hoursHandColor = getColor(
+                R.styleable.ClockView_hoursHandColor,
+                DEFAULT_HOURS_HAND_COLOR
+            )
+            minutesHandColor = getColor(
+                R.styleable.ClockView_minutesHandColor,
+                DEFAULT_MINUTES_HAND_COLOR
+            )
+            secondsHandColor = getColor(
+                R.styleable.ClockView_secondsHandColor,
+                DEFAULT_SECONDS_HAND_COLOR
+            )
         }
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-
-        radius = min(w, h) / 2f
-        centerX = width / 2f
-        centerY = height / 2f
-
-        setup()
-    }
-
-    private fun setup(){
+    private fun paintSetup(){
         with(backgroundPaint){
             color = backgroundColor
             style = Paint.Style.FILL
@@ -200,17 +231,17 @@ class ClockView @JvmOverloads constructor(
 
         with(dotPaint){
             color = dialColor
-            style = Paint.Style.STROKE
+            style = Paint.Style.FILL
         }
 
         with(labelPaint){
             color = labelColor
             style = Paint.Style.STROKE
             strokeWidth = 0f
-            textSize = radius / 4
+            textSize = radius / 3
             textAlign = Paint.Align.CENTER
             textScaleX = 0.9f
-            letterSpacing = -0.15f
+            letterSpacing = -0.2f
         }
 
         with(hoursHandPaint){
@@ -232,13 +263,6 @@ class ClockView @JvmOverloads constructor(
         }
     }
 
-    private fun drawDial(canvas: Canvas){
-        drawBackground(canvas = canvas)
-        drawBorder(canvas = canvas)
-        drawDots(canvas = canvas)
-        drawLabels(canvas = canvas)
-    }
-
     private fun drawBackground(canvas: Canvas){
         canvas.drawCircle(centerX, centerY, radius, backgroundPaint)
     }
@@ -249,7 +273,7 @@ class ClockView @JvmOverloads constructor(
     }
 
     private fun drawDots(canvas: Canvas){
-        val dotsRadius = 11 * radius / 12
+        val dotsRadius = 21 * radius / 24
         val dotPosition = PointF(0f, 0f)
         for (i in 0 until 60) {
             dotPosition.radial(
@@ -258,13 +282,13 @@ class ClockView @JvmOverloads constructor(
                 x0 = centerX,
                 y0 = centerY
             )
-            val dotRadius = if (i % 5 == 0) radius / 96 else radius / 128
+            val dotRadius = if (i % 5 == 0) radius / 70 else radius / 90
             canvas.drawCircle(dotPosition.x, dotPosition.y, dotRadius, dotPaint)
         }
     }
 
     private fun drawLabels(canvas: Canvas){
-        val labelsRadius = 3 * radius / 4
+        val labelsRadius = 11 * radius / 16
         val labelPosition = PointF(0f, 0f)
         val labelOffSet = (labelPaint.descent() + labelPaint.ascent()) / 2
         for (i in 1..12) {
@@ -280,12 +304,12 @@ class ClockView @JvmOverloads constructor(
     }
 
     private fun drawHoursHand(canvas: Canvas){
-        val angle = (Math.PI * (hours + minutes) / 360f - Math.PI / 2).toFloat()
+        val angle = (Math.PI * (hours + minutes / 60f) / 6 - Math.PI / 2).toFloat()
         canvas.drawLine(
             centerX - cos(angle) * radius * 3 / 14,
             centerY - sin(angle) * radius * 3 / 14,
-            centerX + cos(angle) * radius * 7 / 14,
-            centerY + sin(angle) * radius * 7 / 14,
+            centerX + cos(angle) * radius * 1 / 2,
+            centerY + sin(angle) * radius * 1 / 2,
             hoursHandPaint
         )
     }
@@ -293,10 +317,10 @@ class ClockView @JvmOverloads constructor(
     private fun drawMinutesHand(canvas: Canvas){
         val angle = (Math.PI * minutes / 30 - Math.PI / 2).toFloat()
         canvas.drawLine(
-            centerX - cos(angle) * radius * 2 / 7,
-            centerY - sin(angle) * radius * 2 / 7,
-            centerX + cos(angle) * radius * 5 / 7,
-            centerY + sin(angle) * radius * 5 / 7,
+            centerX - cos(angle) * radius * 5 / 14,
+            centerY - sin(angle) * radius * 5 / 14,
+            centerX + cos(angle) * radius * 11 / 14,
+            centerY + sin(angle) * radius * 11 / 14,
             minutesHandPaint
         )
     }
@@ -306,13 +330,13 @@ class ClockView @JvmOverloads constructor(
         canvas.drawLine(
             centerX - cos(angle) * radius * 1 / 14,
             centerY - sin(angle) * radius * 1 / 14,
-            centerX + cos(angle) * radius * 5 / 7,
-            centerY + sin(angle) * radius * 5 / 7,
+            centerX + cos(angle) * radius * 11 / 14,
+            centerY + sin(angle) * radius * 11 / 14,
             secondsHandPaint
         )
         canvas.drawLine(
-            centerX - cos(angle) * radius * 2 / 7,
-            centerY - sin(angle) * radius * 2 / 7,
+            centerX - cos(angle) * radius * 5 / 14,
+            centerY - sin(angle) * radius * 5 / 14,
             centerX - cos(angle) * radius * 1 / 14,
             centerY - sin(angle) * radius * 1 / 14,
             secondsHandPaint
@@ -328,49 +352,11 @@ class ClockView @JvmOverloads constructor(
         }
     }
 
-    private class SavedState: BaseSavedState, Parcelable {
-        var dialColor = DEFAULT_DIAL_COLOR
-        var backgroundColor = DEFAULT_BACKGROUND_COLOR
-        var labelColor = DEFAULT_DIAL_COLOR
-        var hoursHandColor = DEFAULT_HOURS_HAND_COLOR
-        var minutesHandColor = DEFAULT_MINUTES_HAND_COLOR
-        var secondsHandColor = DEFAULT_SECONDS_HAND_COLOR
-
-        constructor(superState: Parcelable?): super(superState)
-
-        constructor(src: Parcel): super(src){
-            dialColor = src.readInt()
-            backgroundColor = src.readInt()
-            labelColor = src.readInt()
-            hoursHandColor = src.readInt()
-            minutesHandColor = src.readInt()
-            secondsHandColor = src.readInt()
-        }
-
-        override fun writeToParcel(out: Parcel, flags: Int) {
-            super.writeToParcel(out, flags)
-            out.writeInt(dialColor)
-            out.writeInt(backgroundColor)
-            out.writeInt(labelColor)
-            out.writeInt(hoursHandColor)
-            out.writeInt(minutesHandColor)
-            out.writeInt(secondsHandColor)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR: Parcelable.Creator<SavedState> {
-            override fun createFromParcel(p0: Parcel): SavedState {
-                return SavedState(p0)
-            }
-
-            override fun newArray(p0: Int): Array<SavedState?> {
-                return arrayOfNulls<SavedState?>(p0)
-            }
-
-        }
+    private fun updateTime(){
+        val time = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+        hours = time.substring(0, 2).toInt() % 12
+        minutes = time.substring(3, 5).toInt()
+        seconds = time.substring(6, 8).toInt()
     }
 
 }

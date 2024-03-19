@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ExampleActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.02" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/middle_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_vertical_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.98" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/top_horizontal_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.02" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/middle_horizontal_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_horizontal_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.98" />
+
+    <com.michel.analogclock.ui.ClockView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        app:dialColor="@color/pink"
+        app:labelColor="@color/pink"
+        app:hoursHandColor="@color/pink"
+        app:minutesHandColor="@color/pink"
+        app:secondsHandColor="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/middle_horizontal_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/middle_vertical_guideline"
+        app:layout_constraintStart_toEndOf="@+id/left_vertical_guideline"
+        app:layout_constraintTop_toTopOf="@+id/top_horizontal_guideline" />
+
+    <com.michel.analogclock.ui.ClockView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        app:backgroundColor="@color/cyan"
+        app:dialColor="@color/blue"
+        app:labelColor="@color/blue"
+        app:hoursHandColor="@color/black"
+        app:minutesHandColor="@color/black"
+        app:secondsHandColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/middle_horizontal_guideline"
+        app:layout_constraintEnd_toEndOf="@+id/right_vertical_guideline"
+        app:layout_constraintStart_toStartOf="@+id/middle_vertical_guideline"
+        app:layout_constraintTop_toTopOf="@+id/top_horizontal_guideline" />
+
+    <com.michel.analogclock.ui.ClockView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        app:backgroundColor="@color/yellow"
+        app:dialColor="@color/green"
+        app:labelColor="@color/green"
+        app:hoursHandColor="@color/green"
+        app:minutesHandColor="@color/green"
+        app:secondsHandColor="@color/green"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_horizontal_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/middle_vertical_guideline"
+        app:layout_constraintStart_toEndOf="@+id/left_vertical_guideline"
+        app:layout_constraintTop_toTopOf="@+id/middle_horizontal_guideline" />
+
+    <com.michel.analogclock.ui.ClockView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        app:backgroundColor="@color/platinum"
+        app:dialColor="@color/dark_grey"
+        app:labelColor="@color/dark_grey"
+        app:hoursHandColor="@color/dark_grey"
+        app:minutesHandColor="@color/dark_grey"
+        app:secondsHandColor="@color/light_black"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_horizontal_guideline"
+        app:layout_constraintEnd_toEndOf="@+id/right_vertical_guideline"
+        app:layout_constraintStart_toStartOf="@+id/middle_vertical_guideline"
+        app:layout_constraintTop_toTopOf="@+id/middle_horizontal_guideline" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        android:textSize="26sp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_horizontal_guideline"
+        app:layout_constraintEnd_toStartOf="@+id/right_vertical_guideline"
+        app:layout_constraintStart_toStartOf="@+id/left_vertical_guideline"
+        app:layout_constraintTop_toTopOf="@+id/top_horizontal_guideline" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
