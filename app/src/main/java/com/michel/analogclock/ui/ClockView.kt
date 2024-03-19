@@ -77,7 +77,7 @@ class ClockView : View {
             override fun run() {
                 updateTime()
                 invalidate()
-                this@ClockView.postDelayed(this, 1000)
+                this@ClockView.postDelayed(this, 500)
             }
         }
     }
